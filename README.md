@@ -1,6 +1,6 @@
 # android-example
 
-[![Release](https://jitpack.io/v/jitpack/android-example.svg)](https://jitpack.io/#jitpack/android-example)
+[![](https://jitpack.io/v/Myrronth/readwritegpx-android.svg)](https://jitpack.io/#Myrronth/readwritegpx-android)
 
 Example Android library project that works with jitpack.io.
 
