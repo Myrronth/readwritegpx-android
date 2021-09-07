@@ -56,6 +56,13 @@ tasks.dokkaJavadoc.configure {
     outputDirectory.set(buildDir.resolve("javadoc"))
 }
 
+val sourcesJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = "Assembles sources JAR"
+    archiveClassifier.set("sources")
+    from(android.sourceSets.getByName("main").java.srcDirs)
+}
+
 val dokkaJar by tasks.creating(Jar::class) {
     group = JavaBasePlugin.DOCUMENTATION_GROUP
     description = "Assembles Kotlin docs with Dokka"
@@ -65,6 +72,7 @@ val dokkaJar by tasks.creating(Jar::class) {
 }
 
 artifacts {
+    archives(sourcesJar)
     archives(dokkaJar)
 }
 
@@ -76,6 +84,7 @@ afterEvaluate {
 
                 artifactId = Library.artifactId
 
+                artifact(sourcesJar)
                 artifact(dokkaJar)
             }
         }
