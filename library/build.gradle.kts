@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("maven-publish")
+    id("org.jetbrains.dokka") version "1.5.0"
 }
 
 group = Library.group
@@ -51,6 +52,22 @@ dependencies {
     androidTestImplementation("androidx.test:rules:1.4.0")
 }
 
+tasks.dokkaJavadoc.configure {
+    outputDirectory.set(buildDir.resolve("javadoc"))
+}
+
+val dokkaJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = "Assembles Kotlin docs with Dokka"
+    archiveClassifier.set("javadoc")
+    from(tasks.dokkaJavadoc)
+    dependsOn(tasks.dokkaJavadoc)
+}
+
+artifacts {
+    archives(dokkaJar)
+}
+
 afterEvaluate {
     publishing {
         publications {
@@ -58,6 +75,8 @@ afterEvaluate {
                 from(components["release"])
 
                 artifactId = Library.artifactId
+
+                artifact(dokkaJar)
             }
         }
     }
