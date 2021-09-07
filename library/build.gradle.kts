@@ -10,15 +10,19 @@ repositories {
     maven { url = uri("https://jitpack.io") }
 }
 
-group = Project.group
-version = Project.version
+group = Library.group
+version = Library.version
 
 android {
-    compileSdk = 31
+    compileSdk = AndroidSdk.compile
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 31
+        minSdk = AndroidSdk.min
+        targetSdk = AndroidSdk.target
+
+        multiDexEnabled = true
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -27,13 +31,17 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     lint {
         isWarningsAsErrors = true
         isAbortOnError = true
@@ -41,10 +49,12 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}")
-    implementation("androidx.core:core-ktx:1.6.0")
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("com.google.android.material:material:1.4.0")
+
+    androidTestImplementation("androidx.test:runner:1.4.0")
+    androidTestImplementation("androidx.test:rules:1.4.0")
 }
 
 afterEvaluate {
@@ -53,7 +63,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 from(components["release"])
 
-                artifactId = Project.artifactId
+                artifactId = Library.artifactId
             }
         }
     }

@@ -1,5 +1,1 @@
-<manifest package="io.jitpack.api">
-
-    <application />
-
-</manifest>
+<manifest package="com.tobiaskress.readwritegpxandroid.parser"/>
