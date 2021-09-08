@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2021-09-08
+### Added
+- Throw NullPointerExceptions when mandatory attributes are missing.
+### Fixed
+- Fixed a crash when 'magvar' on 'wpt' was not set (magvar is now optional, following the GPX spec). 
+
 ## [0.1.2] - 2021-09-07
 ### Added
 - Added documentation 
