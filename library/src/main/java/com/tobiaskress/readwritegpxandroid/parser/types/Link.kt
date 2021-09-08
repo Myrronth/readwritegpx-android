@@ -40,7 +40,14 @@ data class Link(
         ): Link {
             parser.require(XmlPullParser.START_TAG, namespace, elementName)
 
-            val href: Uri = Uri.parse(parser.getAttributeValue(namespace, ATTRIBUTE_HREF))
+            val hrefString = parser.getAttributeValue(namespace, ATTRIBUTE_HREF)
+
+            @Suppress("ComplexCondition")
+            if (hrefString == null) {
+                throw NullPointerException("Attribute $ATTRIBUTE_HREF has to be set for '$elementName'.")
+            }
+
+            val href = Uri.parse(hrefString)
             var text: String? = null
             var type: String? = null
 

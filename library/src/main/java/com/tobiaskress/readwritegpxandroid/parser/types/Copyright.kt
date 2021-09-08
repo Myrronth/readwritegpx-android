@@ -43,6 +43,12 @@ data class Copyright(
             parser.require(XmlPullParser.START_TAG, namespace, elementName)
 
             val author = parser.getAttributeValue(namespace, ATTRIBUTE_AUTHOR)
+
+            @Suppress("ComplexCondition")
+            if (author == null) {
+                throw NullPointerException("Attribute '$ATTRIBUTE_AUTHOR' has to be set for '$elementName'.")
+            }
+
             var year: Int? = null
             var license: Uri? = null
 

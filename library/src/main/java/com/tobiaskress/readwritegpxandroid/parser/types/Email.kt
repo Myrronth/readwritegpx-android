@@ -41,6 +41,19 @@ data class Email(
             val id = parser.getAttributeValue(namespace, ATTRIBUTE_ID)
             val domain = parser.getAttributeValue(namespace, ATTRIBUTE_DOMAIN)
 
+            val nullStrings: MutableList<String> = mutableListOf()
+            if (id == null) nullStrings.add(ATTRIBUTE_ID)
+            if (domain == null) nullStrings.add(ATTRIBUTE_DOMAIN)
+
+            @Suppress("ComplexCondition")
+            if (nullStrings.size > 0) {
+                throw NullPointerException(
+                    "Attributes ${
+                        nullStrings.joinToString(", ", prefix = "'", postfix = "'")
+                    } have to be set for '$elementName'."
+                )
+            }
+
             // Email element is self closed, advance the parser to next event
             parser.next()
 

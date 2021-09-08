@@ -67,6 +67,20 @@ data class Gpx(
 
             val version = parser.getAttributeValue(namespace, ATTRIBUTE_VERSION)
             val creator = parser.getAttributeValue(namespace, ATTRIBUTE_CREATOR)
+
+            val nullStrings: MutableList<String> = mutableListOf()
+            if (version == null) nullStrings.add(ATTRIBUTE_VERSION)
+            if (creator == null) nullStrings.add(ATTRIBUTE_CREATOR)
+
+            @Suppress("ComplexCondition")
+            if (nullStrings.size > 0) {
+                throw NullPointerException(
+                    "Attributes ${
+                        nullStrings.joinToString(", ", prefix = "'", postfix = "'")
+                    } have to be set for '$elementName'."
+                )
+            }
+
             var metadata: Metadata? = null
             val waypoints: MutableList<Waypoint> = mutableListOf()
             val routes: MutableList<Route> = mutableListOf()

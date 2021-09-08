@@ -161,8 +161,24 @@ data class Waypoint(
         ): Waypoint {
             parser.require(XmlPullParser.START_TAG, namespace, elementName)
 
-            val latitude = Latitude(parser.getAttributeValue(namespace, ATTRIBUTE_LATITUDE).toDouble())
-            val longitude = Longitude(parser.getAttributeValue(namespace, ATTRIBUTE_LONGITUDE).toDouble())
+            val latitudeString = parser.getAttributeValue(namespace, ATTRIBUTE_LATITUDE)
+            val longitudeString = parser.getAttributeValue(namespace, ATTRIBUTE_LONGITUDE)
+
+            val nullStrings: MutableList<String> = mutableListOf()
+            if (latitudeString == null) nullStrings.add(ATTRIBUTE_LATITUDE)
+            if (longitudeString == null) nullStrings.add(ATTRIBUTE_LONGITUDE)
+
+            @Suppress("ComplexCondition")
+            if (nullStrings.size > 0) {
+                throw NullPointerException(
+                    "Attributes ${
+                        nullStrings.joinToString(", ", prefix = "'", postfix = "'")
+                    } have to be set for '$elementName'."
+                )
+            }
+
+            val latitude = Latitude(latitudeString.toDouble())
+            val longitude = Longitude(longitudeString.toDouble())
             var elevation: Double? = null
             var time: LocalDateTime? = null
             var magneticVariation: Degree? = null

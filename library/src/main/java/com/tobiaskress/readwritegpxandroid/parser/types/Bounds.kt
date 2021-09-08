@@ -43,14 +43,30 @@ data class Bounds(
         ): Bounds {
             parser.require(XmlPullParser.START_TAG, namespace, elementName)
 
-            val minimumLatitude = Latitude(parser.getAttributeValue(namespace, ATTRIBUTE_MINIMUM_LATITUDE)
-                .toDouble())
-            val minimumLongitude = Longitude(parser.getAttributeValue(namespace, ATTRIBUTE_MINIMUM_LONGITUDE)
-                .toDouble())
-            val maximumLatitude = Latitude(parser.getAttributeValue(namespace, ATTRIBUTE_MAXIMUM_LATITUDE)
-                .toDouble())
-            val maximumLongitude = Longitude(parser.getAttributeValue(namespace, ATTRIBUTE_MAXIMUM_LONGITUDE)
-                .toDouble())
+            val minimumLatitudeString = parser.getAttributeValue(namespace, ATTRIBUTE_MINIMUM_LATITUDE)
+            val minimumLongitudeString = parser.getAttributeValue(namespace, ATTRIBUTE_MINIMUM_LONGITUDE)
+            val maximumLatitudeString = parser.getAttributeValue(namespace, ATTRIBUTE_MAXIMUM_LATITUDE)
+            val maximumLongitudeString = parser.getAttributeValue(namespace, ATTRIBUTE_MAXIMUM_LONGITUDE)
+
+            val nullStrings: MutableList<String> = mutableListOf()
+            if (minimumLatitudeString == null) nullStrings.add(ATTRIBUTE_MINIMUM_LATITUDE)
+            if (minimumLongitudeString == null) nullStrings.add(ATTRIBUTE_MINIMUM_LONGITUDE)
+            if (maximumLatitudeString == null) nullStrings.add(ATTRIBUTE_MAXIMUM_LATITUDE)
+            if (maximumLongitudeString == null) nullStrings.add(ATTRIBUTE_MAXIMUM_LONGITUDE)
+
+            @Suppress("ComplexCondition")
+            if (nullStrings.size > 0) {
+                throw NullPointerException(
+                    "Attributes ${
+                        nullStrings.joinToString(", ", prefix = "'", postfix = "'")
+                    } have to be set for '$elementName'."
+                )
+            }
+
+            val minimumLatitude = Latitude(minimumLatitudeString.toDouble())
+            val minimumLongitude = Longitude(minimumLongitudeString.toDouble())
+            val maximumLatitude = Latitude(maximumLatitudeString.toDouble())
+            val maximumLongitude = Longitude(maximumLongitudeString.toDouble())
 
             // Bounds element is self closed, advance the parser to next event
             parser.next()
