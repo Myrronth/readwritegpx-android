@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2021-09-08
+### Fixed
+- Fixed a crash caused by 'magvar' on 'wpt' being an attribute instead of an element.
+
 ## [0.1.3] - 2021-09-08
 ### Added
 - Throw NullPointerExceptions when mandatory attributes are missing.
