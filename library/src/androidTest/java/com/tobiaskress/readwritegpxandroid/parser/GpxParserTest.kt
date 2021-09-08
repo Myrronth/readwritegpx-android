@@ -201,6 +201,12 @@ internal class GpxParserTest {
         assertNull(copyright.license)
     }
 
+    @Test
+    fun testMissingMagvar() {
+        val input = getAssets()!!.open("missing-magvar.gpx")
+        ReadWriteGpx().read(input)
+    }
+
     private fun getAssets(): AssetManager? {
         return InstrumentationRegistry.getInstrumentation().context.assets
     }
