@@ -196,10 +196,9 @@ data class Waypoint(
                         time = ReadWriteGpx.readTextAsLocalTime(parser, ELEMENT_TIME, namespace)
                     }
                     ELEMENT_MAGNETIC_VARIATION -> {
-                        magneticVariation = Degree(parser.getAttributeValue(
-                            namespace,
-                            ELEMENT_MAGNETIC_VARIATION
-                        ).toDouble())
+                        magneticVariation = parser.getAttributeValue(namespace, ELEMENT_MAGNETIC_VARIATION)?.let {
+                            Degree(it.toDouble())
+                        }
                     }
                     ELEMENT_GEOID_HEIGHT -> {
                         geoidHeight = ReadWriteGpx.readTextAsDouble(parser, ELEMENT_GEOID_HEIGHT, namespace)
