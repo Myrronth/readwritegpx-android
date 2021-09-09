@@ -67,25 +67,25 @@ data class Track(
     ) {
         xmlSerializer.startTag(namespace, elementName)
 
-        name?.let {
+        name?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_NAME)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_NAME)
         }
 
-        comment?.let {
+        comment?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_COMMENT)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_COMMENT)
         }
 
-        description?.let {
+        description?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_DESCRIPTION)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_DESCRIPTION)
         }
 
-        source?.let {
+        source?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_SOURCE)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_SOURCE)
@@ -102,7 +102,7 @@ data class Track(
             xmlSerializer.endTag(namespace, ELEMENT_NUMBER)
         }
 
-        type?.let {
+        type?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_TYPE)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_TYPE)

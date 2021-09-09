@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0b2] - 2021-09-09
+### Improved
+- Add elements only if their text values would not be empty.
+
 ## [1.0.0b] - 2021-09-09
 ### Added
 - Added ability to serialize `GPX` via `GpxSerializer.serialize(gpx: GPX)`

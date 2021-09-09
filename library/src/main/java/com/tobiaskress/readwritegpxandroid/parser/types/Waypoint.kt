@@ -172,25 +172,25 @@ data class Waypoint(
             xmlSerializer.endTag(namespace, ELEMENT_GEOID_HEIGHT)
         }
 
-        name?.let {
+        name?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_NAME)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_NAME)
         }
 
-        comment?.let {
+        comment?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_COMMENT)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_COMMENT)
         }
 
-        description?.let {
+        description?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_DESCRIPTION)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_DESCRIPTION)
         }
 
-        source?.let {
+        source?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_SOURCE)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_SOURCE)
@@ -200,13 +200,13 @@ data class Waypoint(
             it.serialize(xmlSerializer, ELEMENT_LINK, namespace)
         }
 
-        symbol?.let {
+        symbol?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_SYMBOL)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_SYMBOL)
         }
 
-        type?.let {
+        type?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_TYPE)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_TYPE)

@@ -68,13 +68,13 @@ data class Metadata(
     ) {
         xmlSerializer.startTag(namespace, elementName)
 
-        name?.let {
+        name?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_NAME)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_NAME)
         }
 
-        description?.let {
+        description?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_DESCRIPTION)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_DESCRIPTION)
@@ -93,7 +93,7 @@ data class Metadata(
             xmlSerializer.endTag(namespace, ELEMENT_TIME)
         }
 
-        keywords?.let {
+        keywords?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_KEYWORDS)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_KEYWORDS)

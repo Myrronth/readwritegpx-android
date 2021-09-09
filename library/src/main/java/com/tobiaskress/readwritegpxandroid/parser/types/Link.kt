@@ -34,13 +34,13 @@ data class Link(
         xmlSerializer.startTag(namespace, elementName)
         xmlSerializer.attribute(namespace, ATTRIBUTE_HREF, href.toString())
 
-        text?.let {
+        text?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_TEXT)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_TEXT)
         }
 
-        type?.let {
+        type?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_TYPE)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_TYPE)

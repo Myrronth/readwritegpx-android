@@ -32,7 +32,7 @@ data class Person(
     ) {
         xmlSerializer.startTag(namespace, elementName)
 
-        name?.let {
+        name?.takeIf { it.isNotEmpty() }?.let {
             xmlSerializer.startTag(namespace, ELEMENT_NAME)
             xmlSerializer.text(it)
             xmlSerializer.endTag(namespace, ELEMENT_NAME)
