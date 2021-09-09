@@ -8,7 +8,7 @@ object App {
 object Library {
     const val group = "com.tobiaskress"
     const val artifactId = "readwritegpx-android"
-    const val version = "1.0.0"
+    const val version = "1.0.0b"
 }
 
 object Versions {

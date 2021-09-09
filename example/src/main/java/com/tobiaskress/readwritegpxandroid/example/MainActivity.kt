@@ -19,7 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.tobiaskress.readwritegpxandroid.example.ui.theme.ReadWriteGpxAndroidTheme
-import com.tobiaskress.readwritegpxandroid.parser.ReadWriteGpx
+import com.tobiaskress.readwritegpxandroid.parser.GpxParser
 import com.tobiaskress.readwritegpxandroid.parser.types.Gpx
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
             assets.open("test.gpx").use {
                 try {
                     Log.e(LOG_TAG, "Start parsing")
-                    gpx = ReadWriteGpx().read(it)
+                    gpx = GpxParser().parse(it)
                     Log.e(LOG_TAG, "Finished parsing")
                 } catch (e: IOException) {
                     e.printStackTrace()

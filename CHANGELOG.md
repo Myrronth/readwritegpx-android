@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0b] - 2021-09-09
+### Added
+- Added ability to serialize `GPX` via `GpxSerializer.serialize(gpx: GPX)`
+### Changed
+- **Breaking change:** Renamed `ReadWriteGpx` to `GpxParser`
+- **Breaking change:** Removed `GpxParser.read`, use `GpxParser.parse` instead
+
 ## [0.1.4] - 2021-09-08
 ### Fixed
 - Fixed a crash caused by 'magvar' on 'wpt' being an attribute instead of an element.

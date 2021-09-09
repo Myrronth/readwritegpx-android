@@ -1,6 +1,7 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlSerializer
 
 /**
  * An ordered sequence of points. (for polygons or polylines, e.g.)
@@ -13,11 +14,25 @@ data class PointSegment(
     val points: List<Point> = listOf()
 ) {
 
+    internal fun serialize(
+        xmlSerializer: XmlSerializer,
+        elementName: String,
+        namespace: String?
+    ) {
+        xmlSerializer.startTag(namespace, elementName)
+
+        points.forEach {
+            it.serialize(xmlSerializer, ELEMENT_POINT, namespace)
+        }
+
+        xmlSerializer.endTag(namespace, elementName)
+    }
+
     companion object {
 
         private const val ELEMENT_POINT = "pt"
 
-        internal fun read(
+        internal fun parse(
             parser: XmlPullParser,
             elementName: String,
             namespace: String?,
@@ -35,7 +50,7 @@ data class PointSegment(
 
                 when (parser.name) {
                     ELEMENT_POINT -> {
-                        points.add(Point.read(parser, ELEMENT_POINT, namespace, skip, loopMustContinue))
+                        points.add(Point.parse(parser, ELEMENT_POINT, namespace, skip, loopMustContinue))
                     }
                     else -> skip(parser)
                 }

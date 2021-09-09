@@ -1,6 +1,7 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlSerializer
 
 /**
  * Not yet implemented.
@@ -9,7 +10,16 @@ import org.xmlpull.v1.XmlPullParser
  */
 object Extensions {
 
-    internal fun read(
+    internal fun serialize(
+        xmlSerializer: XmlSerializer,
+        elementName: String,
+        namespace: String?
+    ) {
+        xmlSerializer.startTag(namespace, elementName)
+        xmlSerializer.endTag(namespace, elementName)
+    }
+
+    internal fun parse(
         parser: XmlPullParser,
         elementName: String,
         namespace: String?,

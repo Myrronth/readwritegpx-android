@@ -1,6 +1,7 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlSerializer
 
 /**
  * An email address. Broken into two parts ([id] and [domain]) to help prevent email harvesting.
@@ -24,12 +25,23 @@ data class Email(
     val emailString
         get() = "$id@$domain"
 
+    internal fun serialize(
+        xmlSerializer: XmlSerializer,
+        elementName: String,
+        namespace: String?
+    ) {
+        xmlSerializer.startTag(namespace, elementName)
+        xmlSerializer.attribute(namespace, ATTRIBUTE_ID, id)
+        xmlSerializer.attribute(namespace, ATTRIBUTE_DOMAIN, domain)
+        xmlSerializer.endTag(namespace, elementName)
+    }
+
     companion object {
 
         private const val ATTRIBUTE_ID = "id"
         private const val ATTRIBUTE_DOMAIN = "domain"
 
-        internal fun read(
+        internal fun parse(
             parser: XmlPullParser,
             elementName: String,
             namespace: String?,

@@ -1,12 +1,14 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
-import com.tobiaskress.readwritegpxandroid.parser.ReadWriteGpx
+import com.tobiaskress.readwritegpxandroid.parser.GpxParser
 import com.tobiaskress.readwritegpxandroid.parser.readText
 import com.tobiaskress.readwritegpxandroid.parser.readTextAsDouble
 import com.tobiaskress.readwritegpxandroid.parser.readTextAsLocalTime
 import com.tobiaskress.readwritegpxandroid.parser.readTextAsUInt
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlSerializer
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 /**
  * Represents a waypoint, point of interest, or named feature on a map.
@@ -127,6 +129,138 @@ data class Waypoint(
     val extensions: Extensions? = null
 ) {
 
+    internal fun serialize(
+        xmlSerializer: XmlSerializer,
+        elementName: String,
+        namespace: String?
+    ) {
+        xmlSerializer.startTag(namespace, elementName)
+
+        xmlSerializer.attribute(
+            namespace,
+            ATTRIBUTE_LATITUDE,
+            latitude.decimalDegrees.toBigDecimal().toPlainString()
+        )
+
+        xmlSerializer.attribute(
+            namespace,
+            ATTRIBUTE_LONGITUDE,
+            longitude.decimalDegrees.toBigDecimal().toPlainString()
+        )
+
+        elevation?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_ELEVATION)
+            xmlSerializer.text(it.toBigDecimal().toPlainString())
+            xmlSerializer.endTag(namespace, ELEMENT_ELEVATION)
+        }
+
+        time?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_TIME)
+            xmlSerializer.text(it.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+            xmlSerializer.endTag(namespace, ELEMENT_TIME)
+        }
+
+        magneticVariation?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_MAGNETIC_VARIATION)
+            xmlSerializer.text(it.decimalDegrees.toBigDecimal().toPlainString())
+            xmlSerializer.endTag(namespace, ELEMENT_MAGNETIC_VARIATION)
+        }
+
+        geoidHeight?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_GEOID_HEIGHT)
+            xmlSerializer.text(it.toBigDecimal().toPlainString())
+            xmlSerializer.endTag(namespace, ELEMENT_GEOID_HEIGHT)
+        }
+
+        name?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_NAME)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_NAME)
+        }
+
+        comment?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_COMMENT)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_COMMENT)
+        }
+
+        description?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_DESCRIPTION)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_DESCRIPTION)
+        }
+
+        source?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_SOURCE)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_SOURCE)
+        }
+
+        links.forEach {
+            it.serialize(xmlSerializer, ELEMENT_LINK, namespace)
+        }
+
+        symbol?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_SYMBOL)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_SYMBOL)
+        }
+
+        type?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_TYPE)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_TYPE)
+        }
+
+        fix?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_FIX)
+            xmlSerializer.text(it.identifier)
+            xmlSerializer.endTag(namespace, ELEMENT_FIX)
+        }
+
+        numberOfSatellites?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_NUMBER_OF_SATELLITES)
+            @Suppress("MagicNumber")
+            xmlSerializer.text(it.toString(10))
+            xmlSerializer.endTag(namespace, ELEMENT_NUMBER_OF_SATELLITES)
+        }
+
+        horizontalDilutionOfPrecision?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_HORIZONTAL_DILUTION_OF_PRECISION)
+            xmlSerializer.text(it.toBigDecimal().toPlainString())
+            xmlSerializer.endTag(namespace, ELEMENT_HORIZONTAL_DILUTION_OF_PRECISION)
+        }
+
+        verticalDilutionOfPrecision?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_VERTICAL_DILUTION_OF_PRECISION)
+            xmlSerializer.text(it.toBigDecimal().toPlainString())
+            xmlSerializer.endTag(namespace, ELEMENT_VERTICAL_DILUTION_OF_PRECISION)
+        }
+
+        positionDilutionOfPrecision?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_POSITION_DILUTION_OF_PRECISION)
+            xmlSerializer.text(it.toBigDecimal().toPlainString())
+            xmlSerializer.endTag(namespace, ELEMENT_POSITION_DILUTION_OF_PRECISION)
+        }
+
+        ageOfDgpsData?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_AGE_OF_DGPS_DATA)
+            xmlSerializer.text(it.toBigDecimal().toPlainString())
+            xmlSerializer.endTag(namespace, ELEMENT_AGE_OF_DGPS_DATA)
+        }
+
+        dgpsId?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_DGPS_ID)
+            @Suppress("MagicNumber")
+            xmlSerializer.text(it.value.toString(10))
+            xmlSerializer.endTag(namespace, ELEMENT_DGPS_ID)
+        }
+
+        extensions?.serialize(xmlSerializer, ELEMENT_EXTENSIONS, namespace)
+
+        xmlSerializer.endTag(namespace, elementName)
+    }
+
     companion object {
 
         private const val ATTRIBUTE_LATITUDE = "lat"
@@ -152,7 +286,7 @@ data class Waypoint(
         private const val ELEMENT_EXTENSIONS = "extensions"
 
         @Suppress("ComplexMethod", "LongMethod")
-        internal fun read(
+        internal fun parse(
             parser: XmlPullParser,
             elementName: String,
             namespace: String?,
@@ -206,75 +340,75 @@ data class Waypoint(
 
                 when (parser.name) {
                     ELEMENT_ELEVATION -> {
-                        elevation = ReadWriteGpx.readTextAsDouble(parser, ELEMENT_ELEVATION, namespace)
+                        elevation = GpxParser.readTextAsDouble(parser, ELEMENT_ELEVATION, namespace)
                     }
                     ELEMENT_TIME -> {
-                        time = ReadWriteGpx.readTextAsLocalTime(parser, ELEMENT_TIME, namespace)
+                        time = GpxParser.readTextAsLocalTime(parser, ELEMENT_TIME, namespace)
                     }
                     ELEMENT_MAGNETIC_VARIATION -> {
                         magneticVariation = Degree(
-                            ReadWriteGpx.readTextAsDouble(parser, ELEMENT_MAGNETIC_VARIATION, namespace)
+                            GpxParser.readTextAsDouble(parser, ELEMENT_MAGNETIC_VARIATION, namespace)
                         )
                     }
                     ELEMENT_GEOID_HEIGHT -> {
-                        geoidHeight = ReadWriteGpx.readTextAsDouble(parser, ELEMENT_GEOID_HEIGHT, namespace)
+                        geoidHeight = GpxParser.readTextAsDouble(parser, ELEMENT_GEOID_HEIGHT, namespace)
                     }
                     ELEMENT_NAME -> {
-                        name = ReadWriteGpx.readText(parser, ELEMENT_NAME, namespace)
+                        name = GpxParser.readText(parser, ELEMENT_NAME, namespace)
                     }
                     ELEMENT_COMMENT -> {
-                        comment = ReadWriteGpx.readText(parser, ELEMENT_COMMENT, namespace)
+                        comment = GpxParser.readText(parser, ELEMENT_COMMENT, namespace)
                     }
                     ELEMENT_DESCRIPTION -> {
-                        description = ReadWriteGpx.readText(parser, ELEMENT_DESCRIPTION, namespace)
+                        description = GpxParser.readText(parser, ELEMENT_DESCRIPTION, namespace)
                     }
                     ELEMENT_SOURCE -> {
-                        source = ReadWriteGpx.readText(parser, ELEMENT_SOURCE, namespace)
+                        source = GpxParser.readText(parser, ELEMENT_SOURCE, namespace)
                     }
                     ELEMENT_LINK -> {
-                        links.add(Link.read(parser, ELEMENT_LINK, namespace, skip, loopMustContinue))
+                        links.add(Link.parse(parser, ELEMENT_LINK, namespace, skip, loopMustContinue))
                     }
                     ELEMENT_SYMBOL -> {
-                        symbol = ReadWriteGpx.readText(parser, ELEMENT_SYMBOL, namespace)
+                        symbol = GpxParser.readText(parser, ELEMENT_SYMBOL, namespace)
                     }
                     ELEMENT_TYPE -> {
-                        type = ReadWriteGpx.readText(parser, ELEMENT_TYPE, namespace)
+                        type = GpxParser.readText(parser, ELEMENT_TYPE, namespace)
                     }
                     ELEMENT_FIX -> {
-                        fix = Fix.valueOf(ReadWriteGpx.readText(parser, ELEMENT_FIX, namespace))
+                        fix = Fix.valueOf(GpxParser.readText(parser, ELEMENT_FIX, namespace))
                     }
                     ELEMENT_NUMBER_OF_SATELLITES -> {
-                        numberOfSatellites = ReadWriteGpx.readTextAsUInt(parser, ELEMENT_NUMBER_OF_SATELLITES, namespace)
+                        numberOfSatellites = GpxParser.readTextAsUInt(parser, ELEMENT_NUMBER_OF_SATELLITES, namespace)
                     }
                     ELEMENT_HORIZONTAL_DILUTION_OF_PRECISION -> {
-                        horizontalDilutionOfPrecision = ReadWriteGpx.readTextAsDouble(
+                        horizontalDilutionOfPrecision = GpxParser.readTextAsDouble(
                             parser,
                             ELEMENT_HORIZONTAL_DILUTION_OF_PRECISION,
                             namespace
                         )
                     }
                     ELEMENT_VERTICAL_DILUTION_OF_PRECISION -> {
-                        verticalDilutionOfPrecision = ReadWriteGpx.readTextAsDouble(
+                        verticalDilutionOfPrecision = GpxParser.readTextAsDouble(
                             parser,
                             ELEMENT_VERTICAL_DILUTION_OF_PRECISION,
                             namespace
                         )
                     }
                     ELEMENT_POSITION_DILUTION_OF_PRECISION -> {
-                        positionDilutionOfPrecision = ReadWriteGpx.readTextAsDouble(
+                        positionDilutionOfPrecision = GpxParser.readTextAsDouble(
                             parser,
                             ELEMENT_POSITION_DILUTION_OF_PRECISION,
                             namespace
                         )
                     }
                     ELEMENT_AGE_OF_DGPS_DATA -> {
-                        ageOfDgpsData = ReadWriteGpx.readTextAsDouble(parser, ELEMENT_AGE_OF_DGPS_DATA, namespace)
+                        ageOfDgpsData = GpxParser.readTextAsDouble(parser, ELEMENT_AGE_OF_DGPS_DATA, namespace)
                     }
                     ELEMENT_DGPS_ID -> {
-                        dgpsId = DgpsStation(ReadWriteGpx.readTextAsUInt(parser, ELEMENT_DGPS_ID, namespace))
+                        dgpsId = DgpsStation(GpxParser.readTextAsUInt(parser, ELEMENT_DGPS_ID, namespace))
                     }
                     ELEMENT_EXTENSIONS -> {
-                        Extensions.read(parser, ELEMENT_EXTENSIONS, namespace, skip, loopMustContinue)
+                        Extensions.parse(parser, ELEMENT_EXTENSIONS, namespace, skip, loopMustContinue)
                     }
                     else -> skip(parser)
                 }

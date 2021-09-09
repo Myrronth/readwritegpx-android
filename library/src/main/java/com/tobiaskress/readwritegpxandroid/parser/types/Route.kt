@@ -1,9 +1,10 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
-import com.tobiaskress.readwritegpxandroid.parser.ReadWriteGpx
+import com.tobiaskress.readwritegpxandroid.parser.GpxParser
 import com.tobiaskress.readwritegpxandroid.parser.readText
 import com.tobiaskress.readwritegpxandroid.parser.readTextAsUInt
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlSerializer
 
 /**
  * Represents route - an ordered list of waypoints representing a series of turn points leading to a destination.
@@ -57,6 +58,63 @@ data class Route(
     val points: List<Waypoint> = listOf(),
 ) {
 
+    internal fun serialize(
+        xmlSerializer: XmlSerializer,
+        elementName: String,
+        namespace: String?
+    ) {
+        xmlSerializer.startTag(namespace, elementName)
+
+        name?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_NAME)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_NAME)
+        }
+
+        comment?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_COMMENT)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_COMMENT)
+        }
+
+        description?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_DESCRIPTION)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_DESCRIPTION)
+        }
+
+        source?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_SOURCE)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_SOURCE)
+        }
+
+        links.forEach {
+            it.serialize(xmlSerializer, ELEMENT_LINK, namespace)
+        }
+
+        number?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_NUMBER)
+            @Suppress("MagicNumber")
+            xmlSerializer.text(it.toString(10))
+            xmlSerializer.endTag(namespace, ELEMENT_NUMBER)
+        }
+
+        type?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_TYPE)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_TYPE)
+        }
+
+        extensions?.serialize(xmlSerializer, ELEMENT_EXTENSIONS, namespace)
+
+        points.forEach {
+            it.serialize(xmlSerializer, ELEMENT_POINT, namespace)
+        }
+
+        xmlSerializer.endTag(namespace, elementName)
+    }
+
     companion object {
 
         private const val ELEMENT_NAME = "name"
@@ -69,7 +127,7 @@ data class Route(
         private const val ELEMENT_EXTENSIONS = "extensions"
         private const val ELEMENT_POINT = "rtept"
 
-        internal fun read(
+        internal fun parse(
             parser: XmlPullParser,
             elementName: String,
             namespace: String?,
@@ -95,31 +153,31 @@ data class Route(
 
                 when (parser.name) {
                     ELEMENT_NAME -> {
-                        name = ReadWriteGpx.readText(parser, ELEMENT_NAME, namespace)
+                        name = GpxParser.readText(parser, ELEMENT_NAME, namespace)
                     }
                     ELEMENT_COMMENT -> {
-                        comment = ReadWriteGpx.readText(parser, ELEMENT_COMMENT, namespace)
+                        comment = GpxParser.readText(parser, ELEMENT_COMMENT, namespace)
                     }
                     ELEMENT_DESCRIPTION -> {
-                        description = ReadWriteGpx.readText(parser, ELEMENT_DESCRIPTION, namespace)
+                        description = GpxParser.readText(parser, ELEMENT_DESCRIPTION, namespace)
                     }
                     ELEMENT_SOURCE -> {
-                        source = ReadWriteGpx.readText(parser, ELEMENT_SOURCE, namespace)
+                        source = GpxParser.readText(parser, ELEMENT_SOURCE, namespace)
                     }
                     ELEMENT_LINK -> {
-                        links.add(Link.read(parser, ELEMENT_LINK, namespace, skip, loopMustContinue))
+                        links.add(Link.parse(parser, ELEMENT_LINK, namespace, skip, loopMustContinue))
                     }
                     ELEMENT_NUMBER -> {
-                        number = ReadWriteGpx.readTextAsUInt(parser, ELEMENT_NUMBER, namespace)
+                        number = GpxParser.readTextAsUInt(parser, ELEMENT_NUMBER, namespace)
                     }
                     ELEMENT_TYPE -> {
-                        type = ReadWriteGpx.readText(parser, ELEMENT_TYPE, namespace)
+                        type = GpxParser.readText(parser, ELEMENT_TYPE, namespace)
                     }
                     ELEMENT_EXTENSIONS -> {
-                        Extensions.read(parser, ELEMENT_EXTENSIONS, namespace, skip, loopMustContinue)
+                        Extensions.parse(parser, ELEMENT_EXTENSIONS, namespace, skip, loopMustContinue)
                     }
                     ELEMENT_POINT -> {
-                        points.add(Waypoint.read(parser, ELEMENT_POINT, namespace, skip, loopMustContinue))
+                        points.add(Waypoint.parse(parser, ELEMENT_POINT, namespace, skip, loopMustContinue))
                     }
                     else -> skip(parser)
                 }

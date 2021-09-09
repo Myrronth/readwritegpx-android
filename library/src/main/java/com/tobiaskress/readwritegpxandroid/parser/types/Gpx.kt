@@ -1,6 +1,7 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlSerializer
 
 /**
  * GPX documents contain a [metadata] header, followed by [waypoints], [routes], and [tracks]. You can add your own
@@ -46,6 +47,41 @@ data class Gpx(
     val extensions: Extensions? = null
 ) {
 
+    internal fun serialize(
+        xmlSerializer: XmlSerializer,
+        elementName: String,
+        namespace: String?
+    ) {
+        xmlSerializer.startTag(namespace, elementName)
+        xmlSerializer.attribute(namespace, "xmlns", "http://www.topografix.com/GPX/1/1")
+        xmlSerializer.attribute(namespace, "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
+        xmlSerializer.attribute(
+            namespace,
+            "xsi:schemaLocation",
+            "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
+        )
+        xmlSerializer.attribute(namespace, ATTRIBUTE_CREATOR, creator)
+        xmlSerializer.attribute(namespace, ATTRIBUTE_VERSION, version)
+
+        metadata?.serialize(xmlSerializer, ELEMENT_METADATA, namespace)
+
+        waypoints.forEach {
+            it.serialize(xmlSerializer, ELEMENT_WAYPOINT, namespace)
+        }
+
+        routes.forEach {
+            it.serialize(xmlSerializer, ELEMENT_ROUTES, namespace)
+        }
+
+        tracks.forEach {
+            it.serialize(xmlSerializer, ELEMENT_TRACKS, namespace)
+        }
+
+        extensions?.serialize(xmlSerializer, ELEMENT_EXTENSIONS, namespace)
+
+        xmlSerializer.endTag(namespace, elementName)
+    }
+
     companion object {
 
         private const val ATTRIBUTE_VERSION = "version"
@@ -56,7 +92,7 @@ data class Gpx(
         private const val ELEMENT_TRACKS = "trk"
         private const val ELEMENT_EXTENSIONS = "extensions"
 
-        internal fun read(
+        internal fun parse(
             parser: XmlPullParser,
             elementName: String,
             namespace: String?,
@@ -94,19 +130,19 @@ data class Gpx(
 
                 when (parser.name) {
                     ELEMENT_METADATA -> {
-                        metadata = Metadata.read(parser, ELEMENT_METADATA, namespace, skip, loopMustContinue)
+                        metadata = Metadata.parse(parser, ELEMENT_METADATA, namespace, skip, loopMustContinue)
                     }
                     ELEMENT_WAYPOINT -> {
-                        waypoints.add(Waypoint.read(parser, ELEMENT_WAYPOINT, namespace, skip, loopMustContinue))
+                        waypoints.add(Waypoint.parse(parser, ELEMENT_WAYPOINT, namespace, skip, loopMustContinue))
                     }
                     ELEMENT_ROUTES -> {
-                        routes.add(Route.read(parser, ELEMENT_ROUTES, namespace, skip, loopMustContinue))
+                        routes.add(Route.parse(parser, ELEMENT_ROUTES, namespace, skip, loopMustContinue))
                     }
                     ELEMENT_TRACKS -> {
-                        tracks.add(Track.read(parser, ELEMENT_TRACKS, namespace, skip, loopMustContinue))
+                        tracks.add(Track.parse(parser, ELEMENT_TRACKS, namespace, skip, loopMustContinue))
                     }
                     ELEMENT_EXTENSIONS -> {
-                        Extensions.read(parser, ELEMENT_EXTENSIONS, namespace, skip, loopMustContinue)
+                        Extensions.parse(parser, ELEMENT_EXTENSIONS, namespace, skip, loopMustContinue)
                     }
                     else -> skip(parser)
                 }

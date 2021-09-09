@@ -1,6 +1,7 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlSerializer
 
 /**
  * Two lat/lon pairs defining the extent of an element.
@@ -27,6 +28,40 @@ data class Bounds(
     val maximumLongitude: Longitude
 ) {
 
+    internal fun serialize(
+        xmlSerializer: XmlSerializer,
+        elementName: String,
+        namespace: String?
+    ) {
+        xmlSerializer.startTag(namespace, elementName)
+
+        xmlSerializer.attribute(
+            namespace,
+            ATTRIBUTE_MINIMUM_LATITUDE,
+            minimumLatitude.decimalDegrees.toBigDecimal().toPlainString()
+        )
+
+        xmlSerializer.attribute(
+            namespace,
+            ATTRIBUTE_MINIMUM_LONGITUDE,
+            minimumLongitude.decimalDegrees.toBigDecimal().toPlainString()
+        )
+
+        xmlSerializer.attribute(
+            namespace,
+            ATTRIBUTE_MAXIMUM_LATITUDE,
+            maximumLatitude.decimalDegrees.toBigDecimal().toPlainString()
+        )
+
+        xmlSerializer.attribute(
+            namespace,
+            ATTRIBUTE_MAXIMUM_LONGITUDE,
+            maximumLongitude.decimalDegrees.toBigDecimal().toPlainString()
+        )
+
+        xmlSerializer.endTag(namespace, elementName)
+    }
+
     companion object {
 
         private const val ATTRIBUTE_MINIMUM_LATITUDE = "minlat"
@@ -34,7 +69,7 @@ data class Bounds(
         private const val ATTRIBUTE_MAXIMUM_LATITUDE = "maxlat"
         private const val ATTRIBUTE_MAXIMUM_LONGITUDE = "maxlon"
 
-        internal fun read(
+        internal fun parse(
             parser: XmlPullParser,
             elementName: String,
             namespace: String?,

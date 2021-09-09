@@ -1,10 +1,11 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
 import android.net.Uri
-import com.tobiaskress.readwritegpxandroid.parser.ReadWriteGpx
+import com.tobiaskress.readwritegpxandroid.parser.GpxParser
 import com.tobiaskress.readwritegpxandroid.parser.readTextAsInt
 import com.tobiaskress.readwritegpxandroid.parser.readTextAsUri
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlSerializer
 
 /**
  * Information about the copyright holder and any license governing use of this file. By linking to an appropriate
@@ -27,13 +28,37 @@ data class Copyright(
     val license: Uri? = null
 ) {
 
+    internal fun serialize(
+        xmlSerializer: XmlSerializer,
+        elementName: String,
+        namespace: String?
+    ) {
+        xmlSerializer.startTag(namespace, elementName)
+        xmlSerializer.attribute(namespace, ATTRIBUTE_AUTHOR, author)
+
+        year?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_YEAR)
+            @Suppress("MagicNumber")
+            xmlSerializer.text(it.toString(10))
+            xmlSerializer.endTag(namespace, ELEMENT_YEAR)
+        }
+
+        license?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_LICENSE)
+            xmlSerializer.text(it.toString())
+            xmlSerializer.endTag(namespace, ELEMENT_LICENSE)
+        }
+
+        xmlSerializer.endTag(namespace, elementName)
+    }
+
     companion object {
 
         private const val ATTRIBUTE_AUTHOR = "author"
         private const val ELEMENT_YEAR = "year"
         private const val ELEMENT_LICENSE = "license"
 
-        internal fun read(
+        internal fun parse(
             parser: XmlPullParser,
             elementName: String,
             namespace: String?,
@@ -58,8 +83,8 @@ data class Copyright(
                 }
 
                 when (parser.name) {
-                    ELEMENT_YEAR -> year = ReadWriteGpx.readTextAsInt(parser, ELEMENT_YEAR, namespace)
-                    ELEMENT_LICENSE -> license = ReadWriteGpx.readTextAsUri(parser, ELEMENT_LICENSE, namespace)
+                    ELEMENT_YEAR -> year = GpxParser.readTextAsInt(parser, ELEMENT_YEAR, namespace)
+                    ELEMENT_LICENSE -> license = GpxParser.readTextAsUri(parser, ELEMENT_LICENSE, namespace)
                     else -> skip(parser)
                 }
             }

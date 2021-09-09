@@ -1,10 +1,12 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
-import com.tobiaskress.readwritegpxandroid.parser.ReadWriteGpx
+import com.tobiaskress.readwritegpxandroid.parser.GpxParser
 import com.tobiaskress.readwritegpxandroid.parser.readText
 import com.tobiaskress.readwritegpxandroid.parser.readTextAsOffsetTime
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlSerializer
 import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
 /**
  * Information about the GPX file, [author], and [copyright] restrictions goes in the metadata section. Providing
@@ -59,10 +61,54 @@ data class Metadata(
     val extensions: Extensions? = null,
 ) {
 
+    internal fun serialize(
+        xmlSerializer: XmlSerializer,
+        elementName: String,
+        namespace: String?
+    ) {
+        xmlSerializer.startTag(namespace, elementName)
+
+        name?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_NAME)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_NAME)
+        }
+
+        description?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_DESCRIPTION)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_DESCRIPTION)
+        }
+
+        author?.serialize(xmlSerializer, ELEMENT_AUTHOR, namespace)
+        copyright?.serialize(xmlSerializer, ELEMENT_COPYRIGHT, namespace)
+
+        links.forEach {
+            it.serialize(xmlSerializer, ELEMENT_LINK, namespace)
+        }
+
+        time?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_TIME)
+            xmlSerializer.text(it.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+            xmlSerializer.endTag(namespace, ELEMENT_TIME)
+        }
+
+        keywords?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_KEYWORDS)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_KEYWORDS)
+        }
+
+        bounds?.serialize(xmlSerializer, ELEMENT_BOUNDS, namespace)
+        extensions?.serialize(xmlSerializer, ELEMENT_EXTENSIONS, namespace)
+
+        xmlSerializer.endTag(namespace, elementName)
+    }
+
     companion object {
 
         private const val ELEMENT_NAME = "name"
-        private const val ELEMENT_DESC = "desc"
+        private const val ELEMENT_DESCRIPTION = "desc"
         private const val ELEMENT_AUTHOR = "author"
         private const val ELEMENT_COPYRIGHT = "copyright"
         private const val ELEMENT_LINK = "link"
@@ -71,7 +117,7 @@ data class Metadata(
         private const val ELEMENT_BOUNDS = "bounds"
         private const val ELEMENT_EXTENSIONS = "extensions"
 
-        internal fun read(
+        internal fun parse(
             parser: XmlPullParser,
             elementName: String,
             namespace: String?,
@@ -97,31 +143,31 @@ data class Metadata(
 
                 when (parser.name) {
                     ELEMENT_NAME -> {
-                        name = ReadWriteGpx.readText(parser, ELEMENT_NAME, namespace)
+                        name = GpxParser.readText(parser, ELEMENT_NAME, namespace)
                     }
-                    ELEMENT_DESC -> {
-                        desc = ReadWriteGpx.readText(parser, ELEMENT_DESC, namespace)
+                    ELEMENT_DESCRIPTION -> {
+                        desc = GpxParser.readText(parser, ELEMENT_DESCRIPTION, namespace)
                     }
                     ELEMENT_AUTHOR -> {
-                        author = Person.read(parser, ELEMENT_AUTHOR, namespace, skip, loopMustContinue)
+                        author = Person.parse(parser, ELEMENT_AUTHOR, namespace, skip, loopMustContinue)
                     }
                     ELEMENT_COPYRIGHT -> {
-                        copyright = Copyright.read(parser, ELEMENT_COPYRIGHT, namespace, skip, loopMustContinue)
+                        copyright = Copyright.parse(parser, ELEMENT_COPYRIGHT, namespace, skip, loopMustContinue)
                     }
                     ELEMENT_LINK -> {
-                        links.add(Link.read(parser, ELEMENT_LINK, namespace, skip, loopMustContinue))
+                        links.add(Link.parse(parser, ELEMENT_LINK, namespace, skip, loopMustContinue))
                     }
                     ELEMENT_TIME -> {
-                        time = ReadWriteGpx.readTextAsOffsetTime(parser, ELEMENT_TIME, namespace)
+                        time = GpxParser.readTextAsOffsetTime(parser, ELEMENT_TIME, namespace)
                     }
                     ELEMENT_KEYWORDS -> {
-                        keywords = ReadWriteGpx.readText(parser, ELEMENT_KEYWORDS, namespace)
+                        keywords = GpxParser.readText(parser, ELEMENT_KEYWORDS, namespace)
                     }
                     ELEMENT_BOUNDS -> {
-                        bounds = Bounds.read(parser, ELEMENT_BOUNDS, namespace, skip, loopMustContinue)
+                        bounds = Bounds.parse(parser, ELEMENT_BOUNDS, namespace, skip, loopMustContinue)
                     }
                     ELEMENT_EXTENSIONS -> {
-                        Extensions.read(parser, ELEMENT_EXTENSIONS, namespace, skip, loopMustContinue)
+                        Extensions.parse(parser, ELEMENT_EXTENSIONS, namespace, skip, loopMustContinue)
                     }
                     else -> skip(parser)
                 }

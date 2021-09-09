@@ -1,6 +1,7 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlSerializer
 
 /**
  * A Track Segment holds a list of Track Points which are logically connected in order. To represent a single GPS
@@ -21,12 +22,28 @@ data class TrackSegment(
     val extensions: Extensions? = null
 ) {
 
+    internal fun serialize(
+        xmlSerializer: XmlSerializer,
+        elementName: String,
+        namespace: String?
+    ) {
+        xmlSerializer.startTag(namespace, elementName)
+
+        points.forEach {
+            it.serialize(xmlSerializer, ELEMENT_POINT, namespace)
+        }
+
+        extensions?.serialize(xmlSerializer, ELEMENT_EXTENSIONS, namespace)
+
+        xmlSerializer.endTag(namespace, elementName)
+    }
+
     companion object {
 
         private const val ELEMENT_POINT = "trkpt"
         private const val ELEMENT_EXTENSIONS = "extensions"
 
-        internal fun read(
+        internal fun parse(
             parser: XmlPullParser,
             elementName: String,
             namespace: String?,
@@ -45,10 +62,10 @@ data class TrackSegment(
 
                 when (parser.name) {
                     ELEMENT_POINT -> {
-                        points.add(Waypoint.read(parser, ELEMENT_POINT, namespace, skip, loopMustContinue))
+                        points.add(Waypoint.parse(parser, ELEMENT_POINT, namespace, skip, loopMustContinue))
                     }
                     ELEMENT_EXTENSIONS -> {
-                        Extensions.read(parser, ELEMENT_EXTENSIONS, namespace, skip, loopMustContinue)
+                        Extensions.parse(parser, ELEMENT_EXTENSIONS, namespace, skip, loopMustContinue)
                     }
                     else -> skip(parser)
                 }

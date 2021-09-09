@@ -1,8 +1,9 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
-import com.tobiaskress.readwritegpxandroid.parser.ReadWriteGpx
+import com.tobiaskress.readwritegpxandroid.parser.GpxParser
 import com.tobiaskress.readwritegpxandroid.parser.readText
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlSerializer
 
 /**
  * A person or organization.
@@ -23,13 +24,33 @@ data class Person(
      */
     val link: Link? = null
 ) {
+
+    internal fun serialize(
+        xmlSerializer: XmlSerializer,
+        elementName: String,
+        namespace: String?
+    ) {
+        xmlSerializer.startTag(namespace, elementName)
+
+        name?.let {
+            xmlSerializer.startTag(namespace, ELEMENT_NAME)
+            xmlSerializer.text(it)
+            xmlSerializer.endTag(namespace, ELEMENT_NAME)
+        }
+
+        email?.serialize(xmlSerializer, ELEMENT_EMAIL, namespace)
+        link?.serialize(xmlSerializer, ELEMENT_LINK, namespace)
+
+        xmlSerializer.endTag(namespace, elementName)
+    }
+
     companion object {
 
         private const val ELEMENT_NAME = "name"
         private const val ELEMENT_EMAIL = "email"
         private const val ELEMENT_LINK = "link"
 
-        internal fun read(
+        internal fun parse(
             parser: XmlPullParser,
             elementName: String,
             namespace: String?,
@@ -49,13 +70,13 @@ data class Person(
 
                 when (parser.name) {
                     ELEMENT_NAME -> {
-                        name = ReadWriteGpx.readText(parser, ELEMENT_NAME, namespace)
+                        name = GpxParser.readText(parser, ELEMENT_NAME, namespace)
                     }
                     ELEMENT_EMAIL -> {
-                        email = Email.read(parser, ELEMENT_EMAIL, namespace, skip, loopMustContinue)
+                        email = Email.parse(parser, ELEMENT_EMAIL, namespace, skip, loopMustContinue)
                     }
                     ELEMENT_LINK -> {
-                        link = Link.read(parser, ELEMENT_LINK, namespace, skip, loopMustContinue)
+                        link = Link.parse(parser, ELEMENT_LINK, namespace, skip, loopMustContinue)
                     }
                     else -> skip(parser)
                 }
