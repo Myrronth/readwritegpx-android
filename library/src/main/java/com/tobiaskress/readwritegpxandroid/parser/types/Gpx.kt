@@ -53,15 +53,15 @@ data class Gpx(
         namespace: String?
     ) {
         xmlSerializer.startTag(namespace, elementName)
-        xmlSerializer.attribute(namespace, "xmlns", "http://www.topografix.com/GPX/1/1")
         xmlSerializer.attribute(namespace, "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
+        xmlSerializer.attribute(namespace, "xmlns", "http://www.topografix.com/GPX/1/1")
         xmlSerializer.attribute(
             namespace,
             "xsi:schemaLocation",
             "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
         )
-        xmlSerializer.attribute(namespace, ATTRIBUTE_CREATOR, creator)
         xmlSerializer.attribute(namespace, ATTRIBUTE_VERSION, version)
+        xmlSerializer.attribute(namespace, ATTRIBUTE_CREATOR, creator)
 
         metadata?.serialize(xmlSerializer, ELEMENT_METADATA, namespace)
 
