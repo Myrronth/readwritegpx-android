@@ -5,11 +5,12 @@ import com.tobiaskress.readwritegpxandroid.parser.types.Gpx
 import java.io.StringWriter
 
 /**
- * [GpxSerializer] currently supports all GPX tags listed in GPX v1.1 schema, except for extenions.
+ * [GpxSerializer] currently supports all GPX tags listed in
+ * [Topografix GPX 1.1 schema](http://www.topografix.com/GPX/1/1/), except for the extensions element.
  */
 class GpxSerializer {
 
-    internal val namespace: String? = null
+    private val namespace: String? = null
 
     fun serialize(gpx: Gpx): String {
         val xmlSerializer = Xml.newSerializer()

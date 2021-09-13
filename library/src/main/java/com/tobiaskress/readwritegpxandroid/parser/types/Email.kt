@@ -57,7 +57,6 @@ data class Email(
             if (id == null) nullStrings.add(ATTRIBUTE_ID)
             if (domain == null) nullStrings.add(ATTRIBUTE_DOMAIN)
 
-            @Suppress("ComplexCondition")
             if (nullStrings.size > 0) {
                 throw NullPointerException(
                     "Attributes ${

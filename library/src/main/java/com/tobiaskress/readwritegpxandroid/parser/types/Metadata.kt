@@ -1,8 +1,8 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
 import com.tobiaskress.readwritegpxandroid.parser.GpxParser
-import com.tobiaskress.readwritegpxandroid.parser.readText
-import com.tobiaskress.readwritegpxandroid.parser.readTextAsOffsetTime
+import com.tobiaskress.readwritegpxandroid.parser.helper.readText
+import com.tobiaskress.readwritegpxandroid.parser.helper.readTextAsOffsetTime
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlSerializer
 import java.time.OffsetDateTime

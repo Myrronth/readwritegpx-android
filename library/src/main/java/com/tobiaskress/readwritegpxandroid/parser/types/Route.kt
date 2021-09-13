@@ -1,8 +1,8 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
 import com.tobiaskress.readwritegpxandroid.parser.GpxParser
-import com.tobiaskress.readwritegpxandroid.parser.readText
-import com.tobiaskress.readwritegpxandroid.parser.readTextAsUInt
+import com.tobiaskress.readwritegpxandroid.parser.helper.readText
+import com.tobiaskress.readwritegpxandroid.parser.helper.readTextAsUInt
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlSerializer
 
@@ -95,8 +95,7 @@ data class Route(
 
         number?.let {
             xmlSerializer.startTag(namespace, ELEMENT_NUMBER)
-            @Suppress("MagicNumber")
-            xmlSerializer.text(it.toString(10))
+            xmlSerializer.text(it.toString())
             xmlSerializer.endTag(namespace, ELEMENT_NUMBER)
         }
 

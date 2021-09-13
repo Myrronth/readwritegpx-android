@@ -20,7 +20,7 @@ allprojects {
 
 ```kotlin
 dependencies {
-    implementation("com.github.myrronth:readwritegpx-android:0.1.0")
+    implementation("com.github.myrronth:readwritegpx-android:1.0.0.beta.2")
 }
 ```
 

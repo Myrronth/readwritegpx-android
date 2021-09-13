@@ -10,11 +10,12 @@ import java.io.IOException
 import java.io.InputStream
 
 /**
- * [GpxParser] currently supports all GPX tags listed in GPX v1.1 schema, except for extenions.
+ * [GpxParser] currently supports all GPX tags listed in
+ * [Topografix GPX 1.1 schema](http://www.topografix.com/GPX/1/1/), except for the extensions element.
  */
 class GpxParser {
 
-    internal val namespace: String? = null
+    private val namespace: String? = null
 
     @Throws(XmlPullParserException::class, IOException::class)
     fun parse(inputStream: InputStream): Gpx {

@@ -2,8 +2,8 @@ package com.tobiaskress.readwritegpxandroid.parser.types
 
 import android.net.Uri
 import com.tobiaskress.readwritegpxandroid.parser.GpxParser
-import com.tobiaskress.readwritegpxandroid.parser.readTextAsInt
-import com.tobiaskress.readwritegpxandroid.parser.readTextAsUri
+import com.tobiaskress.readwritegpxandroid.parser.helper.readTextAsInt
+import com.tobiaskress.readwritegpxandroid.parser.helper.readTextAsUri
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlSerializer
 
@@ -38,8 +38,7 @@ data class Copyright(
 
         year?.let {
             xmlSerializer.startTag(namespace, ELEMENT_YEAR)
-            @Suppress("MagicNumber")
-            xmlSerializer.text(it.toString(10))
+            xmlSerializer.text(it.toString())
             xmlSerializer.endTag(namespace, ELEMENT_YEAR)
         }
 
@@ -68,11 +67,7 @@ data class Copyright(
             parser.require(XmlPullParser.START_TAG, namespace, elementName)
 
             val author = parser.getAttributeValue(namespace, ATTRIBUTE_AUTHOR)
-
-            @Suppress("ComplexCondition")
-            if (author == null) {
-                throw NullPointerException("Attribute '$ATTRIBUTE_AUTHOR' has to be set for '$elementName'.")
-            }
+                ?: throw NullPointerException("Attribute '$ATTRIBUTE_AUTHOR' has to be set for '$elementName'.")
 
             var year: Int? = null
             var license: Uri? = null

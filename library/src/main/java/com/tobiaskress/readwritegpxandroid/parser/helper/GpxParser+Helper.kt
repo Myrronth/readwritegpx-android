@@ -1,6 +1,7 @@
-package com.tobiaskress.readwritegpxandroid.parser
+package com.tobiaskress.readwritegpxandroid.parser.helper
 
 import android.net.Uri
+import com.tobiaskress.readwritegpxandroid.parser.GpxParser
 import org.xmlpull.v1.XmlPullParser
 import java.time.LocalDateTime
 import java.time.OffsetDateTime

@@ -1,10 +1,10 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
 import com.tobiaskress.readwritegpxandroid.parser.GpxParser
-import com.tobiaskress.readwritegpxandroid.parser.readText
-import com.tobiaskress.readwritegpxandroid.parser.readTextAsDouble
-import com.tobiaskress.readwritegpxandroid.parser.readTextAsLocalTime
-import com.tobiaskress.readwritegpxandroid.parser.readTextAsUInt
+import com.tobiaskress.readwritegpxandroid.parser.helper.readText
+import com.tobiaskress.readwritegpxandroid.parser.helper.readTextAsDouble
+import com.tobiaskress.readwritegpxandroid.parser.helper.readTextAsLocalTime
+import com.tobiaskress.readwritegpxandroid.parser.helper.readTextAsUInt
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlSerializer
 import java.time.LocalDateTime
@@ -129,6 +129,7 @@ data class Waypoint(
     val extensions: Extensions? = null
 ) {
 
+    @Suppress("ComplexMethod", "LongMethod")
     internal fun serialize(
         xmlSerializer: XmlSerializer,
         elementName: String,
@@ -220,8 +221,7 @@ data class Waypoint(
 
         numberOfSatellites?.let {
             xmlSerializer.startTag(namespace, ELEMENT_NUMBER_OF_SATELLITES)
-            @Suppress("MagicNumber")
-            xmlSerializer.text(it.toString(10))
+            xmlSerializer.text(it.toString())
             xmlSerializer.endTag(namespace, ELEMENT_NUMBER_OF_SATELLITES)
         }
 
@@ -251,8 +251,7 @@ data class Waypoint(
 
         dgpsId?.let {
             xmlSerializer.startTag(namespace, ELEMENT_DGPS_ID)
-            @Suppress("MagicNumber")
-            xmlSerializer.text(it.value.toString(10))
+            xmlSerializer.text(it.value.toString())
             xmlSerializer.endTag(namespace, ELEMENT_DGPS_ID)
         }
 
@@ -302,7 +301,6 @@ data class Waypoint(
             if (latitudeString == null) nullStrings.add(ATTRIBUTE_LATITUDE)
             if (longitudeString == null) nullStrings.add(ATTRIBUTE_LONGITUDE)
 
-            @Suppress("ComplexCondition")
             if (nullStrings.size > 0) {
                 throw NullPointerException(
                     "Attributes ${
@@ -375,7 +373,9 @@ data class Waypoint(
                         type = GpxParser.readText(parser, ELEMENT_TYPE, namespace)
                     }
                     ELEMENT_FIX -> {
-                        fix = Fix.valueOf(GpxParser.readText(parser, ELEMENT_FIX, namespace))
+                        fix = Fix.values().firstOrNull {
+                            it.identifier == GpxParser.readText(parser, ELEMENT_FIX, namespace)
+                        }
                     }
                     ELEMENT_NUMBER_OF_SATELLITES -> {
                         numberOfSatellites = GpxParser.readTextAsUInt(parser, ELEMENT_NUMBER_OF_SATELLITES, namespace)

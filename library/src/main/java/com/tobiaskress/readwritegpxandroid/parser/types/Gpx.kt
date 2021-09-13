@@ -108,7 +108,6 @@ data class Gpx(
             if (version == null) nullStrings.add(ATTRIBUTE_VERSION)
             if (creator == null) nullStrings.add(ATTRIBUTE_CREATOR)
 
-            @Suppress("ComplexCondition")
             if (nullStrings.size > 0) {
                 throw NullPointerException(
                     "Attributes ${

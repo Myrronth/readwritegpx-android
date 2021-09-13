@@ -89,7 +89,6 @@ data class Bounds(
             if (maximumLatitudeString == null) nullStrings.add(ATTRIBUTE_MAXIMUM_LATITUDE)
             if (maximumLongitudeString == null) nullStrings.add(ATTRIBUTE_MAXIMUM_LONGITUDE)
 
-            @Suppress("ComplexCondition")
             if (nullStrings.size > 0) {
                 throw NullPointerException(
                     "Attributes ${

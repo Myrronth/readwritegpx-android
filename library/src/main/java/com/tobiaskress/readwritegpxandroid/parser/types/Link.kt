@@ -2,7 +2,7 @@ package com.tobiaskress.readwritegpxandroid.parser.types
 
 import android.net.Uri
 import com.tobiaskress.readwritegpxandroid.parser.GpxParser
-import com.tobiaskress.readwritegpxandroid.parser.readText
+import com.tobiaskress.readwritegpxandroid.parser.helper.readText
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlSerializer
 
@@ -65,11 +65,7 @@ data class Link(
             parser.require(XmlPullParser.START_TAG, namespace, elementName)
 
             val hrefString = parser.getAttributeValue(namespace, ATTRIBUTE_HREF)
-
-            @Suppress("ComplexCondition")
-            if (hrefString == null) {
-                throw NullPointerException("Attribute $ATTRIBUTE_HREF has to be set for '$elementName'.")
-            }
+                ?: throw NullPointerException("Attribute $ATTRIBUTE_HREF has to be set for '$elementName'.")
 
             val href = Uri.parse(hrefString)
             var text: String? = null

@@ -1,7 +1,7 @@
 package com.tobiaskress.readwritegpxandroid.parser.types
 
 import com.tobiaskress.readwritegpxandroid.parser.GpxParser
-import com.tobiaskress.readwritegpxandroid.parser.readText
+import com.tobiaskress.readwritegpxandroid.parser.helper.readText
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlSerializer
 

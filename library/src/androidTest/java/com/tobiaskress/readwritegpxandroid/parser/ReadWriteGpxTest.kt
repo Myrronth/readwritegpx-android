@@ -6,7 +6,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.tobiaskress.readwritegpxandroid.parser.types.Bounds
 import com.tobiaskress.readwritegpxandroid.parser.types.Copyright
 import com.tobiaskress.readwritegpxandroid.parser.types.Email
-import com.tobiaskress.readwritegpxandroid.parser.types.Gpx
 import com.tobiaskress.readwritegpxandroid.parser.types.Link
 import com.tobiaskress.readwritegpxandroid.parser.types.Metadata
 import com.tobiaskress.readwritegpxandroid.parser.types.Person
@@ -25,14 +24,14 @@ object ReadWriteGpxTest {
 
     @Throws(IOException::class, XmlPullParserException::class)
     fun testShoresOfDerwentwater(input: InputStream) {
-        val gpx: Gpx = GpxParser().parse(input)
+        val gpx = GpxParser().parse(input)
 
         Assert.assertNotNull(gpx)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
     fun testWadlbeisserExport(input: InputStream) {
-        val gpx: Gpx = GpxParser().parse(input)
+        val gpx = GpxParser().parse(input)
 
         Assert.assertEquals(0, gpx.tracks.size)
         Assert.assertEquals(2, gpx.waypoints.size)
@@ -42,7 +41,7 @@ object ReadWriteGpxTest {
 
     @Throws(IOException::class, XmlPullParserException::class)
     fun testGarminBaseCampExport(input: InputStream) {
-        val gpx: Gpx = GpxParser().parse(input)
+        val gpx = GpxParser().parse(input)
         val metadata = gpx.metadata
 
         Assert.assertNotNull(metadata)
@@ -69,7 +68,7 @@ object ReadWriteGpxTest {
 
     @Throws(IOException::class, XmlPullParserException::class)
     fun testGarminBaseCampExportNoClosingTag(input: InputStream) {
-        val gpx: Gpx = GpxParser().parse(input)
+        val gpx = GpxParser().parse(input)
 
         Assert.assertEquals(1, gpx.tracks.size)
     }
